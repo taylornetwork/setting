@@ -131,7 +131,7 @@ Set the user's setting for a key and value.
 (new Setting)->set('key', 'somevalue');
 ```
 
-If a logged in user exists and no key `key` exists, returns instance of `Setting` model.
+If a logged in user exists and no key `key` exists, returns instance of the `TaylorNetwork\Setting\Setting` model.
 
 ``` php
 TaylorNetwork\Setting\Setting { #000
@@ -144,17 +144,24 @@ TaylorNetwork\Setting\Setting { #000
    }
 ```
 
-If a logged in user exists and key `key` already exists, it will be updated and return a boolean value.
+---
+
+If a logged in user exists and key `key` already exists, it will be updated and return an instance of the `TaylorNetwork\Setting\Setting` model
 
 ``` php
-// On success
-true
-
-// On update failure
-false
+TaylorNetwork\Setting\Setting { #000
+     id: 1,
+     user_id: 1,
+     key: 'key',
+     value: 'somevalue',
+     created_at: "2016-11-14 13:06:59",
+     updated_at: "2016-11-16 13:06:59",
+   }
 ```
 
-If no logged in user exists, or if the update failed, `false` is returned.
+---
+
+If no logged in user exists `false` is returned.
 
 
 #### Additional Methods

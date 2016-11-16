@@ -74,7 +74,8 @@ class Setting extends Model
 
             if($setting)
             {
-                return $setting->update([ 'value' => $value ]);
+                $setting->update([ 'value' => $value ]);
+                return $setting;
             }
 
             return self::create([ 'user_id' => Auth::user()->id, 'key' => $key, 'value' => $value ]);
