@@ -9,11 +9,50 @@ use Illuminate\Support\Facades\Auth;
 class Setting extends Model
 {
     /**
-     * Fillable attributes
+     * Setting constructor.
      *
-     * @var array
+     * @param array $attributes
      */
-    protected $fillable = [ 'user_id', 'key', 'value' ];
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->fillable = [
+            $this->getRelatedColumn(),
+            'key',
+            'value'
+        ];
+    }
+
+    /**
+     * Get the related column name
+     *
+     * @return string
+     */
+    private function getRelatedColumn()
+    {
+        return config('setting.related_column', 'user_id');
+    }
+
+    /**
+     * Check if a user is logged in
+     *
+     * @return bool
+     */
+    private function isGuest()
+    {
+        return Auth::guest();
+    }
+
+    /**
+     * Get current user
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable
+     */
+    private function getCurrentUser()
+    {
+        return Auth::user();
+    }
 
     /**
      * Belongs to a user
@@ -22,7 +61,7 @@ class Setting extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(config('setting.model', '\\App\\User'));
     }
 
     /**
@@ -33,9 +72,9 @@ class Setting extends Model
      */
     private function search($key)
     {
-        if(!Auth::guest())
+        if(!$this->isGuest())
         {
-            return self::where('user_id', Auth::user()->id)->where('key', $key)->first();
+            return self::where('user_id', $this->getCurrentUser()->getAuthIdentifier())->where('key', $key)->first();
         }
         return null;
     }
@@ -68,7 +107,7 @@ class Setting extends Model
      */
     public function set($key, $value)
     {
-        if(!Auth::guest())
+        if(!$this->isGuest())
         {
             $setting = $this->search($key);
 
@@ -78,7 +117,11 @@ class Setting extends Model
                 return $setting;
             }
 
-            return self::create([ 'user_id' => Auth::user()->id, 'key' => $key, 'value' => $value ]);
+            return self::create([
+                $this->getRelatedColumn() => $this->getCurrentUser()->getAuthIdentifier(),
+                'key' => $key,
+                'value' => $value
+            ]);
         }
         return false;
     }

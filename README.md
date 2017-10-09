@@ -12,27 +12,7 @@ $ composer require taylornetwork/setting
 
 ## Setup
 
-Add the service provider to the providers array in your `config/app.php` file.
-
-``` php
-'providers' => [
-
-    TaylorNetwork\Setting\SettingServiceProvider::class,
-
-];
-```
-
----
-
-If you want to use the `Setting` facade, add the facade to the aliases array in your `config/app.php` file.
-
-``` php
-'aliases' => [
-
-    'Setting' => TaylorNetwork\Setting\Facades\Setting::class,
-
-];
-```
+Laravel should auto discover this package and as such it should work out of the box. If not see Manual Setup below.
 
 ---
 
@@ -64,7 +44,32 @@ class User extends Model
 }
 ```
 
-## Mirgrate Database Table
+### Manual Setup 
+
+Add the service provider to the providers array in your `config/app.php` file.
+
+``` php
+'providers' => [
+
+    TaylorNetwork\Setting\SettingServiceProvider::class,
+
+];
+```
+
+---
+
+If you want to use the `Setting` facade, add the facade to the aliases array in your `config/app.php` file.
+
+``` php
+'aliases' => [
+
+    'Setting' => TaylorNetwork\Setting\Facades\Setting::class,
+
+];
+```
+
+
+## Migrate Database Table
 
 ``` bash
 $ php artisan migrate
