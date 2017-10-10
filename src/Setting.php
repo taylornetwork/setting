@@ -8,21 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Setting extends Model
 {
-    /**
-     * Setting constructor.
-     *
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->fillable = [
-            $this->getRelatedColumn(),
-            'key',
-            'value'
-        ];
-    }
+    protected $fillable = [ 'user_id', 'key', 'value' ];
 
     /**
      * Get the related column name
