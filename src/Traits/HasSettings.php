@@ -1,9 +1,9 @@
 <?php 
 
+namespace TaylorNetwork\Setting\Traits;
+
 use TaylorNetwork\Setting\Setting;
 use Exception;
-
-namespace TaylorNetwork\Setting\Traits;
 
 trait HasSettings
 {
