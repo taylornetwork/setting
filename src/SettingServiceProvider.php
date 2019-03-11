@@ -33,5 +33,9 @@ class SettingServiceProvider extends ServiceProvider
         App::bind('Setting', function(){
             return new Setting;
         });
+
+        foreach(glob(__DIR__.'/Helpers/*.php') as $helper) {
+            require_once $helper;
+        }
     }
 }

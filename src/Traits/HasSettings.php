@@ -9,7 +9,7 @@ trait HasSettings
 {
 	public function settings()
 	{
-		return $this->hasMany(Setting::class);
+		return $this->hasMany(Setting::class, config('setting.related_column', 'user_id'));
 	}
 
 	public function setting($key, $default = null)
