@@ -4,18 +4,19 @@
 namespace TaylorNetwork\Setting;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class Setting extends Model
 {
     protected $fillable = [ 'user_id', 'key', 'value' ];
+
+    protected $guard = null;
 
     /**
      * Get the related column name
      *
      * @return string
      */
-    private function getRelatedColumn()
+    protected function getRelatedColumn()
     {
         return config('setting.related_column', 'user_id');
     }
@@ -25,9 +26,9 @@ class Setting extends Model
      *
      * @return bool
      */
-    private function isGuest()
+    protected function isGuest()
     {
-        return Auth::guest();
+        return auth($this->guard)->guest();
     }
 
     /**
@@ -35,9 +36,9 @@ class Setting extends Model
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable
      */
-    private function getCurrentUser()
+    protected function getCurrentUser()
     {
-        return Auth::user();
+        return auth($this->guard)->user();
     }
 
     /**
@@ -56,11 +57,12 @@ class Setting extends Model
      * @param string $key
      * @return mixed
      */
-    private function search($key)
+    protected function search($key)
     {
         if(!$this->isGuest())
         {
-            return self::where('user_id', $this->getCurrentUser()->getAuthIdentifier())->where('key', $key)->first();
+            return self::where($this->getRelatedColumn(), $this->getCurrentUser()->getAuthIdentifier())
+                        ->where('key', $key)->first();
         }
         return null;
     }
@@ -74,14 +76,19 @@ class Setting extends Model
      */
     public function get($key, $default = null)
     {
-        $setting = $this->search($key);
+        return $this->search($key)->value ?? $default;
+    }
 
-        if($setting)
-        {
-            return $setting->value;
-        }
-
-        return $default;
+    /**
+     * Set the auth guard
+     * 
+     * @param mixed $guard
+     * @return $this
+     */
+    public function guard($guard)
+    {
+        $this->guard = $guard;
+        return $this;
     }
 
     /**

@@ -2,6 +2,8 @@
 
 This provides an easy way to store user settings. It includes the `Setting` facade, `Setting` model and settings table migration.
 
+*Note: I'm in the process of rewriting this...*
+
 ## Install
 
 Via Composer
@@ -16,32 +18,30 @@ Laravel should auto discover this package and as such it should work out of the 
 
 ---
 
-Optionally, you can add a `hasMany` relationship in your `App\User` model to make settings readily available by `$user->settings`
-
-In `App\User`
+Optionally, you can add the `HasSettings` trait to your user model.
 
 ``` php
 namespace App;
 
 use Illuminate\Eloquent\Model;
+use TaylorNetwork\Setting\Traits\HasSettings;
 
 class User extends Model
 {
-
-    // Code
-
-    /**
-     * User's settings from TaylorNetwork\Setting package
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function settings()
-    {
-        return $this->hasMany('TaylorNetwork\Setting\Setting');
-    }
-
-    // Code
+    use HasSettings;
 }
+```
+
+This will allow you to access and set settings directly.
+
+```php
+$user->setting('somekey', 'default');
+
+// Returns the value of somekey or 'default' if not set
+
+$user->updateSetting('somekey', 'somevalue');
+
+// Will update or create the setting on the user and return true or false
 ```
 
 ### Manual Setup 
