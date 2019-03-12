@@ -24,7 +24,11 @@ if(!function_exists('setting')) {
             return $default;
         }
 
-        return Setting::guard($guard)->get($key, $default);
+        if($guard !== null) {
+            return Setting::guard($guard)->get($key, $default);
+        }
+
+        return Setting::get($key, $default);
     }
 
 }

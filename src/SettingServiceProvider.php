@@ -18,7 +18,11 @@ class SettingServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/config/setting.php' => config_path('setting.php'),
-        ]);
+        ], 'config');
+
+        $this->publishes([
+            __DIR__.'/migrations/' => database_path('migrations')
+        ], 'migrations');
     }
 
     /**
@@ -31,7 +35,8 @@ class SettingServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/config/setting.php', 'setting');
 
         App::bind('Setting', function(){
-            return new Setting;
+            $settingModel = config('setting.setting_model', Setting::class);
+            return new $settingModel;
         });
 
         foreach(glob(__DIR__.'/Helpers/*.php') as $helper) {

@@ -1,207 +1,190 @@
-# User Setting Class for Laravel
+# Settings for Laravel User
 
-This provides an easy way to store user settings. It includes the `Setting` facade, `Setting` model and settings table migration.
+This package provides an easy way to access settings for the current logged in user.
 
-*Note: I'm in the process of rewriting this...*
+1. [About](#about)
+2. [Install](#install)
+3. [Usage](#usage)
+	- [Available Methods](#available-methods)
+	- [Setting Class](#setting-class)
+	- [Facade](#facade)
+	- [Helper Function](#helper)
+4. [HasSettings Trait](#hassettings-trait)
+5. [Config](#config)
+6. [Alternate Configuration](#alternate-configuration)
+7. [Extending](#extending)
+8. [License](#license)
+
+## About
+
+This package uses Laravel's `auth` function to access the logged in user and return their setting for a given key, or a default value. Similar to the way that the `config` and `env` functions work. 
+
+When using the `HasSettings` trait it allows you to access a non-logged in user's settings.
+
+By default if the default value is not set and a setting cannot be found, `null` is returned. The default value will also be returned if there is no logged in user.
 
 ## Install
 
 Via Composer
 
-``` bash
+```bash
 $ composer require taylornetwork/setting
 ```
 
-## Setup
+Run database migrations 
 
-Laravel should auto discover this package and as such it should work out of the box. If not see Manual Setup below.
-
----
-
-Optionally, you can add the `HasSettings` trait to your user model.
-
-``` php
-namespace App;
-
-use Illuminate\Eloquent\Model;
-use TaylorNetwork\Setting\Traits\HasSettings;
-
-class User extends Model
-{
-    use HasSettings;
-}
-```
-
-This will allow you to access and set settings directly.
-
-```php
-$user->setting('somekey', 'default');
-
-// Returns the value of somekey or 'default' if not set
-
-$user->updateSetting('somekey', 'somevalue');
-
-// Will update or create the setting on the user and return true or false
-```
-
-### Manual Setup 
-
-Add the service provider to the providers array in your `config/app.php` file.
-
-``` php
-'providers' => [
-
-    TaylorNetwork\Setting\SettingServiceProvider::class,
-
-];
-```
-
----
-
-If you want to use the `Setting` facade, add the facade to the aliases array in your `config/app.php` file.
-
-``` php
-'aliases' => [
-
-    'Setting' => TaylorNetwork\Setting\Facades\Setting::class,
-
-];
-```
-
-
-## Migrate Database Table
-
-``` bash
+```bash
 $ php artisan migrate
 ```
 
-This will create the `settings` table in your database.
+---
+
+You can optionally add the `HasSettings` trait to your user model to access settings directly.
+
+```php
+namespace App;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use TaylorNetwork\Setting\Traits\HasSettings;
+
+class User extends Authenticatable
+{
+   use HasSettings;
+   
+   // ...
+}
+```
 
 ## Usage
 
-You use the package either with the facade or by creating a new instance of the class.
+### Available Methods
 
-It is probably best to use the facade, because the class extends Laravel's `Illuminate\Eloquent\Model` which will require you to instantiate the class on every call.
-If not, the class may return an already found setting.
+All of these methods are available when using the class of facade.
 
-### Class
+*Note: the `Setting` class extends `Illuminate\Database\Eloquent\Model`*
 
-By default the class uses Laravel's `Illuminate\Support\Facades\Auth` facade to get the logged in user and all settings are saved to that user.
+**guard($guard)**
 
-Include the `TaylorNetwork\Setting\Setting` class in your class and instantiate it.
+This will allow you to manually set an auth guard before trying to find an active user.
 
-``` php
+```php
+Setting::guard('api')->get('key', 'defaultValue');
+```
+
+**get($key, $default = null)**
+
+Get a setting for the logged in user or return the default value.
+
+```php
+Setting::get('key');
+```
+
+**set($key, $value)**
+
+Creates or updates the setting for the logged in user.
+
+```php
+Setting::set('someKey', 'someValue');
+```
+
+Returns the setting if successful, or `false` if there is no logged in user.
+
+
+### Setting Class
+
+Example:
+
+```php
 use TaylorNetwork\Setting\Setting;
 
-class DummyClass
-{
-    public function findSetting($key)
-    {
-        return (new Setting)->get($key, 'defaultValue');
-    }
-}
+$setting = new Setting;
+$setting->get('someKey', 'defaultValue');
+
 ```
-
-#### Available Methods
-
-The setting class has a few methods to get and set settings, but extends `Illuminate\Eloquent\Model` and has that functionality as well.
-
-##### get (string $key, mixed $defaultValue = null)
-
-Get the user's setting by a key or return a given default value.
-
-With default value
-
-``` php
-(new TaylorNetwork\Setting\Setting)->get('key', 'DEFAULT');
-```
-
-If logged in user has setting with key value `key`, it would return that value, otherwise it would return `'DEFAULT'`
-
----
-
-Without default value
-
-``` php
-(new TaylorNetwork\Setting\Setting)->get('key');
-```
-
-If logged in user has setting with key value `key`, it would return that value, otherwise it would return `null`
-
-##### set (string $key, mixed $value)
-
-Set the user's setting for a key and value.
-
-``` php
-(new Setting)->set('key', 'somevalue');
-```
-
-If a logged in user exists and no key `key` exists, returns instance of the `TaylorNetwork\Setting\Setting` model.
-
-``` php
-TaylorNetwork\Setting\Setting { #000
-     id: 1,
-     user_id: 1,
-     key: 'key',
-     value: 'somevalue',
-     created_at: "2016-11-14 13:06:59",
-     updated_at: "2016-11-14 13:06:59",
-   }
-```
-
----
-
-If a logged in user exists and key `key` already exists, it will be updated and return an instance of the `TaylorNetwork\Setting\Setting` model
-
-``` php
-TaylorNetwork\Setting\Setting { #000
-     id: 1,
-     user_id: 1,
-     key: 'key',
-     value: 'somevalue',
-     created_at: "2016-11-14 13:06:59",
-     updated_at: "2016-11-16 13:06:59",
-   }
-```
-
----
-
-If no logged in user exists `false` is returned.
-
-
-#### Additional Methods
-
-Since `TaylorNetwork\Setting\Setting` extends `Illuminate\Eloquent\Model`, all methods available through Laravel are also available.
-
-##### user()
-
-By default the `TaylorNetwork\Setting\Setting` class includes a `$this->belongsTo('App\User')` making the `App\User` instance available through the `user` function.
 
 ### Facade
 
-Include the facade `TaylorNetwork\Setting\Facades\Setting` at the top of your class.
+Example: 
 
-``` php
-use TaylorNetwork\Setting\Facades\Setting;
+```php
 
-class DummyClass
+Setting::get('someKey');
+
+Setting::set('someKey', 'someValue');
+
+Setting::guard('api')->get('someKey', 'Default Value!');
+
+```
+
+### Helper
+
+The `setting` helper function is an alias for the `get` method. It has an optional third parameter to pass a guard or guards.
+
+Example: 
+
+```php
+// Returns the user's value or null
+setting('key');
+
+// Returns the user's value or 'defaultValue'
+setting('key', 'defaultValue');
+
+// Returns the user's value or 'defaultValue' using the 'api' guard
+setting('key', 'defaultValue', 'api');
+
+// Will try and get a value from each guard in order
+// If a value other than the default value is found it will immediately return it.
+// If none is found after using all the guards in the array, the default value is returned.
+setting('key', 'defaultValue', ['web', 'api']);
+```
+
+## HasSettings Trait
+
+The `HasSettings` trait adds a `settings` relation and the following methods to your model
+
+**setting($key, $default = null)**
+
+This is the same as the `get` method above **BUT** can be used for any user not just one that is logged in.
+
+**updateSetting($key, $value)**
+
+This will create or update a setting for the specified user.
+
+## Config
+
+If you need to change the default auth guard or user model, publish config.
+
+```bash
+$ php artisan vendor:publish --provider="TaylorNetwork\Setting\SettingServiceProvider" --tag=config
+```
+
+## Alternate Configuration
+
+You can modify the `settings` table to suit your needs, publish the migrations
+
+```bash
+$ php artisan vendor:publish --provider="TaylorNetwork\Setting\SettingServiceProvider" --tag=migrations
+```
+
+Be sure to update the config with appropriate `related_column` if you change it. 
+
+## Extending
+
+You can extend the `Setting` model if you need additional functionality. 
+
+```php
+namespace App;
+
+use TaylorNetwork\Setting\Setting as BaseSetting;
+
+class Setting extends BaseSetting
 {
-    public function dummyMethod ()
-    {
-        return Setting::get('setting.key', 'defaultValue');
-    }
+	// --
 }
 ```
 
-All the methods in the class are accessible statically.
-
-
-## Credits
-
-- Main Author: [Sam Taylor][link-author]
+Be sure to update the config with the appropriate new `setting_model`.
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-[link-author]: https://github.com/taylornetwork

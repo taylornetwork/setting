@@ -11,6 +11,13 @@ class Setting extends Model
 
     protected $guard = null;
 
+    protected $setGuard = false;
+
+    public function getValueAttribute()
+    {
+        return $this->attributes['value'];
+    }
+
     /**
      * Get the related column name
      *
@@ -28,7 +35,7 @@ class Setting extends Model
      */
     protected function isGuest()
     {
-        return auth($this->guard)->guest();
+        return auth($this->getGuard())->guest();
     }
 
     /**
@@ -38,7 +45,7 @@ class Setting extends Model
      */
     protected function getCurrentUser()
     {
-        return auth($this->guard)->user();
+        return auth($this->getGuard())->user();
     }
 
     /**
@@ -48,7 +55,7 @@ class Setting extends Model
      */
     public function user()
     {
-        return $this->belongsTo(config('setting.model', '\\App\\User'));
+        return $this->belongsTo(config('setting.user_model', '\\App\\User'));
     }
 
     /**
@@ -65,6 +72,15 @@ class Setting extends Model
                         ->where('key', $key)->first();
         }
         return null;
+    }
+
+    protected function getGuard()
+    {
+        if(!$this->setGuard) {
+            $this->guard = config('setting.auth_guard', null);
+        }
+
+        return $this->guard;
     }
 
     /**
@@ -88,6 +104,7 @@ class Setting extends Model
     public function guard($guard)
     {
         $this->guard = $guard;
+        $this->setGuard = true;
         return $this;
     }
 
