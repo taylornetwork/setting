@@ -40,13 +40,35 @@ class SettingTest extends TestCase
 
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
-        TestUser::create([
+        $user = TestUser::create([
             'id' => 1,
             'name' => 'Test User 1',
             'email' => 'testuser1@example.com',
-        ])->settings()->create([
+        ]);
+
+        $user->settings()->create([
             'key' => 'someKey',
             'value' => 'found',
+        ]);
+
+        $user->settings()->create([
+            'key' => 'boolTestTrue',
+            'value' => true,
+        ]);
+
+        $user->settings()->create([
+            'key' => 'boolTestFalse',
+            'value' => false,
+        ]);
+
+        $user->settings()->create([
+            'key' => 'isInt',
+            'value' => 55,
+        ]);
+
+        $user->settings()->create([
+            'key' => 'isString',
+            'value' => 'this is a string',
         ]);
 
         TestUser::create([
@@ -103,4 +125,20 @@ class SettingTest extends TestCase
         $this->assertEquals('aValue!', Setting::get('anotherKey'));
     }
 
+    public function testBool()
+    {
+        $this->assertTrue(setting('boolTestTrue'));
+        $this->assertFalse(setting('boolTestFalse'));
+    }
+
+    public function testInt()
+    {
+        $this->assertEquals(55, setting('isInt'));
+        $this->assertIsInt(setting('isInt'));
+    }
+
+    public function testString()
+    {
+        $this->assertEquals('this is a string', setting('isString'));
+    }
 }
