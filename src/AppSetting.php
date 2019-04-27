@@ -11,6 +11,8 @@ class AppSetting extends Model
 
     protected $fillable = ['key', 'value'];
 
+    protected $primaryKey = 'key';
+
     /**
      * Search for an app setting
      *

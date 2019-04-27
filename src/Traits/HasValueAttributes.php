@@ -29,4 +29,9 @@ trait HasValueAttributes
             $this->attributes['value'] = (string) $value;
         }
     }
+
+    public function getRawValueAttribute()
+    {
+        return $this->attributes['value'];
+    }
 }
