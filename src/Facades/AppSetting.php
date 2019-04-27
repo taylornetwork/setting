@@ -4,15 +4,15 @@ namespace TaylorNetwork\Setting\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Setting extends Facade
+class AppSetting extends Facade
 {
     /**
      * Get the facade accessor
      *
      * @return string
      */
-    protected static function getFacadeAccessor() 
-    { 
-    	return "Setting";
+    protected static function getFacadeAccessor()
+    {
+        return "AppSetting";
     }
 }

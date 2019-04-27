@@ -34,8 +34,13 @@ class SettingServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/config/setting.php', 'setting');
 
-        App::bind('Setting', function(){
-            $settingModel = config('setting.setting_model', Setting::class);
+        App::bind('UserSetting', function(){
+            $settingModel = config('setting.user_setting_model', UserSetting::class);
+            return new $settingModel;
+        });
+
+        App::bind('AppSetting', function(){
+            $settingModel = config('setting.app_setting_model', AppSetting::class);
             return new $settingModel;
         });
 

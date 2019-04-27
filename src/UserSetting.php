@@ -4,38 +4,17 @@
 namespace TaylorNetwork\Setting;
 
 use Illuminate\Database\Eloquent\Model;
+use TaylorNetwork\Setting\Traits\HasValueAttributes;
 
-class Setting extends Model
+class UserSetting extends Model
 {
+    use HasValueAttributes;
+
     protected $fillable = [ 'user_id', 'key', 'value' ];
 
     protected $guard = null;
 
     protected $setGuard = false;
-
-    public function getValueAttribute()
-    {
-        $value = $this->attributes['value'];
-
-        if(strtolower($value) === 'true' || strtolower($value) === 'false') {
-            return filter_var($value, FILTER_VALIDATE_BOOLEAN);
-        }
-
-        if(ctype_digit($value)) {
-            return (int) $value;
-        }
-
-        return $value;
-    }
-
-    public function setValueAttribute($value)
-    {
-        if(gettype($value) === 'boolean') {
-            $this->attributes['value'] = $value ? 'true' : 'false';
-        } else {
-            $this->attributes['value'] = (string) $value;
-        }
-    }
 
     /**
      * Get the related column name

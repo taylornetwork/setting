@@ -1,7 +1,5 @@
 <?php
 
-use TaylorNetwork\Setting\Facades\Setting;
-
 if(!function_exists('setting')) {
 
     /**
@@ -11,24 +9,11 @@ if(!function_exists('setting')) {
      * @param mixed $default
      * @param mixed $guard
      * @return mixed
+     * @deprecated use user_setting()
      */
     function setting($key, $default = null, $guard = null)
     {
-        if(is_array($guard)) {
-            foreach($guard as $g) {
-                $setting = Setting::guard($g)->get($key, $default);
-                if($setting !== $default) {
-                    return $setting;
-                }
-            }
-            return $default;
-        }
-
-        if($guard !== null) {
-            return Setting::guard($guard)->get($key, $default);
-        }
-
-        return Setting::get($key, $default);
+        return user_setting($key, $default, $guard);
     }
 
 }

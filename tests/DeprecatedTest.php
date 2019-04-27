@@ -7,11 +7,11 @@ $loader->addPsr4('TaylorNetwork\\Tests\\', __DIR__.'/');
 
 use Illuminate\Support\Facades\Auth;
 use Orchestra\Testbench\TestCase;
-use TaylorNetwork\Setting\Facades\Setting;
+use TaylorNetwork\Setting\Facades\UserSetting;
 use TaylorNetwork\Setting\SettingServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class SettingTest extends TestCase
+class DeprecatedTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,15 +23,14 @@ class SettingTest extends TestCase
     protected function getPackageAliases($app)
     {
         return [
-            'Setting' => Setting::class
+            'Setting' => UserSetting::class
         ];
     }
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('auth.providers.users.model', TestUser::class);
         $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite.database', __DIR__.'/database/database.sqlite');
+        $app['config']->set('database.connections.sqlite.database', __DIR__ . '/database/database.sqlite');
     }
 
     protected function setUp(): void
@@ -81,64 +80,21 @@ class SettingTest extends TestCase
         ]);
 
         Auth::login(TestUser::find(1));
+
     }
 
-    public function testFacadeDefault()
+    public function testRenamedFacadeDefault()
     {
-        $this->assertEquals('default', Setting::get('unsetKey', 'default'));
+        $this->assertEquals('defaultValue', \Setting::get('someUnsetKey', 'defaultValue'));
     }
 
-    public function testFacadeValue()
+    public function testRenamedFacade()
     {
-        $this->assertEquals('found', Setting::get('someKey', 'default'));
+        $this->assertEquals('found', \Setting::get('someKey', 'default'));
     }
 
-    public function testHelperDefault()
-    {
-        $this->assertEquals('default', setting('unsetKey', 'default'));
-    }
-
-    public function testHelperValue()
-    {
-        $this->assertEquals('found', setting('someKey', 'default'));
-    }
-
-    public function testUserCall()
-    {
-        $this->assertEquals('found', TestUser::first()->setting('someKey'));
-    }
-
-    public function testUserUpdate()
-    {
-        TestUser::first()->updateSetting('someKey', 'newValue');
-        $this->assertEquals('newValue', setting('someKey'));
-    }
-
-    public function testNonLoginUser()
-    {
-        $this->assertEquals('newValue', TestUser::find(2)->setting('aKey'));
-    }
-
-    public function testFacadeSet()
-    {
-        Setting::set('anotherKey', 'aValue!');
-        $this->assertEquals('aValue!', Setting::get('anotherKey'));
-    }
-
-    public function testBool()
+    public function testDeprecatedHelper()
     {
         $this->assertTrue(setting('boolTestTrue'));
-        $this->assertFalse(setting('boolTestFalse'));
-    }
-
-    public function testInt()
-    {
-        $this->assertEquals(55, setting('isInt'));
-        $this->assertIsInt(setting('isInt'));
-    }
-
-    public function testString()
-    {
-        $this->assertEquals('this is a string', setting('isString'));
     }
 }

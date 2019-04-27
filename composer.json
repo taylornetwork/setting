@@ -26,7 +26,8 @@
                 "TaylorNetwork\\Setting\\SettingServiceProvider"
             ],
             "aliases": {
-                "Setting": "TaylorNetwork\\Setting\\Facades\\Setting"
+                "UserSetting": "TaylorNetwork\\Setting\\Facades\\UserSetting",
+                "AppSetting": "TaylorNetwork\\Setting\\Facades\\AppSetting"
             }
         }
     }

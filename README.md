@@ -1,19 +1,43 @@
-# Settings for Laravel User
+# Settings for Laravel User and App
 
-This package provides an easy way to access settings for the current logged in user.
+This package provides an easy way to access settings for the current logged in user as well as global app settings.
 
-1. [About](#about)
-2. [Install](#install)
-3. [Usage](#usage)
+**NOTE: Some features have changed in v2**
+
+1. [Changes](#changes)
+2. [About](#about)
+3. [Install](#install)
+4. [Usage](#usage)
 	- [Available Methods](#available-methods)
-	- [Setting Class](#setting-class)
-	- [Facade](#facade)
-	- [Helper Function](#helper)
-4. [HasSettings Trait](#hassettings-trait)
-5. [Config](#config)
-6. [Alternate Configuration](#alternate-configuration)
-7. [Extending](#extending)
-8. [License](#license)
+	- [Classes](#classes)
+	- [Facades](#facades)
+	- [Helper Functions](#helpers)
+5. [HasSettings Trait](#hassettings-trait)
+6. [Config](#config)
+7. [Alternate Configuration](#alternate-configuration)
+8. [Extending](#extending)
+9. [License](#license)
+
+## Changes
+
+Support for app specific AND user specific settings has been added. 
+
+- Added `AppSetting` model and facade
+- Added `app_setting` helper
+- Added `user_setting` helper
+- Renamed `Setting` model and facade to `UserSetting`
+- Deprecated `setting` helper
+- Renamed config key `setting_model` to `user_setting_model`
+
+If you use the `setting` helper it will still work but will be removed, so use `user_setting` instead. The `Setting` facade has been renamed to `UserSetting` if you still have code with the `Setting` facade you can rename the alias in your `config/app.php`
+
+```php
+'aliases' => [
+	...
+	'Setting' => TaylorNetwork\Setting\Facades\UserSetting::class,
+	...
+],
+```
 
 ## About
 
@@ -22,6 +46,8 @@ This package uses Laravel's `auth` function to access the logged in user and ret
 When using the `HasSettings` trait it allows you to access a non-logged in user's settings.
 
 By default if the default value is not set and a setting cannot be found, `null` is returned. The default value will also be returned if there is no logged in user.
+
+It also includes support for app specific settings via `AppSetting` 
 
 ## Install
 
@@ -57,85 +83,112 @@ class User extends Authenticatable
 
 ## Usage
 
+*Note: the `UserSetting` and `AppSetting` classes extend `Illuminate\Database\Eloquent\Model`*
+
 ### Available Methods
 
-All of these methods are available when using the class of facade.
+All of these methods are available when using the class or facade.
 
-*Note: the `Setting` class extends `Illuminate\Database\Eloquent\Model`*
-
-**guard($guard)**
+**guard($guard) [UserSetting only]**
 
 This will allow you to manually set an auth guard before trying to find an active user.
 
 ```php
-Setting::guard('api')->get('key', 'defaultValue');
+UserSetting::guard('api')->get('key', 'defaultValue');
 ```
 
-**get($key, $default = null)**
+**get($key, $default = null) [UserSetting and AppSetting]**
 
-Get a setting for the logged in user or return the default value.
+Get a setting for the app/logged in user or return the default value.
 
 ```php
-Setting::get('key');
+UserSetting::get('key');
+
+AppSetting::get('key');
 ```
 
-**set($key, $value)**
+**set($key, $value) [UserSetting and AppSetting]**
 
-Creates or updates the setting for the logged in user.
+Creates or updates the setting for the logged in user or app.
 
 ```php
-Setting::set('someKey', 'someValue');
+UserSetting::set('someKey', 'someValue');
+
+AppSetting::set('someKey', 'someValue');
 ```
 
-Returns the setting if successful, or `false` if there is no logged in user.
+### Classes
 
-
-### Setting Class
-
-Example:
+UserSetting:
 
 ```php
-use TaylorNetwork\Setting\Setting;
+use TaylorNetwork\Setting\UserSetting;
 
-$setting = new Setting;
+$setting = new UserSetting;
 $setting->get('someKey', 'defaultValue');
 
 ```
 
-### Facade
-
-Example: 
+AppSetting:
 
 ```php
+use TaylorNetwork\Setting\AppSetting;
 
-Setting::get('someKey');
-
-Setting::set('someKey', 'someValue');
-
-Setting::guard('api')->get('someKey', 'Default Value!');
+$setting = new AppSetting;
+$setting->get('someKey', 'defaultValue');
 
 ```
 
-### Helper
+### Facades
 
-The `setting` helper function is an alias for the `get` method. It has an optional third parameter to pass a guard or guards.
+UserSetting: 
+
+```php
+
+UserSetting::get('someKey');
+
+UserSetting::set('someKey', 'someValue');
+
+UserSetting::guard('api')->get('someKey', 'Default Value!');
+
+```
+
+AppSetting:
+
+```php
+
+AppSetting::get('someKey');
+
+AppSetting::set('someKey', 'someValue');
+
+```
+
+### Helpers
+
+The `user_setting` and `app_setting` helper functions are aliases for the `get` method. The `user_setting` helper has an optional third parameter to pass a guard or guards.
 
 Example: 
 
 ```php
 // Returns the user's value or null
-setting('key');
+user_setting('key');
+
+// Returns the app's value or null
+app_setting('key');
 
 // Returns the user's value or 'defaultValue'
-setting('key', 'defaultValue');
+user_setting('key', 'defaultValue');
+
+// Returns the app's value or 'defaultValue'
+app_setting('key', 'defaultValue');
 
 // Returns the user's value or 'defaultValue' using the 'api' guard
-setting('key', 'defaultValue', 'api');
+user_setting('key', 'defaultValue', 'api');
 
 // Will try and get a value from each guard in order
 // If a value other than the default value is found it will immediately return it.
 // If none is found after using all the guards in the array, the default value is returned.
-setting('key', 'defaultValue', ['web', 'api']);
+user_setting('key', 'defaultValue', ['web', 'api']);
 ```
 
 ## HasSettings Trait
@@ -170,20 +223,20 @@ Be sure to update the config with appropriate `related_column` if you change it.
 
 ## Extending
 
-You can extend the `Setting` model if you need additional functionality. 
+You can extend the `UserSetting` and `AppSetting` models if you need additional functionality. 
 
 ```php
 namespace App;
 
-use TaylorNetwork\Setting\Setting as BaseSetting;
+use TaylorNetwork\Setting\UserSetting;
 
-class Setting extends BaseSetting
+class Setting extends UserSetting
 {
 	// --
 }
 ```
 
-Be sure to update the config with the appropriate new `setting_model`.
+Be sure to update the config with the appropriate new `user_setting_model` or `app_setting_model`.
 
 ## License
 
