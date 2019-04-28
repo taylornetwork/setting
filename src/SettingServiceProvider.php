@@ -2,8 +2,8 @@
 
 namespace TaylorNetwork\Setting;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\ServiceProvider;
 
 class SettingServiceProvider extends ServiceProvider
 {
@@ -21,7 +21,7 @@ class SettingServiceProvider extends ServiceProvider
         ], 'config');
 
         $this->publishes([
-            __DIR__.'/migrations/' => database_path('migrations')
+            __DIR__.'/migrations/' => database_path('migrations'),
         ], 'migrations');
     }
 
@@ -34,17 +34,19 @@ class SettingServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/config/setting.php', 'setting');
 
-        App::bind('UserSetting', function(){
+        App::bind('UserSetting', function () {
             $settingModel = config('setting.user_setting_model', UserSetting::class);
-            return new $settingModel;
+
+            return new $settingModel();
         });
 
-        App::bind('AppSetting', function(){
+        App::bind('AppSetting', function () {
             $settingModel = config('setting.app_setting_model', AppSetting::class);
-            return new $settingModel;
+
+            return new $settingModel();
         });
 
-        foreach(glob(__DIR__.'/Helpers/*.php') as $helper) {
+        foreach (glob(__DIR__.'/Helpers/*.php') as $helper) {
             require_once $helper;
         }
     }

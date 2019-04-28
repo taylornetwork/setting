@@ -1,6 +1,5 @@
 <?php
 
-
 namespace TaylorNetwork\Setting;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,14 +9,14 @@ class UserSetting extends Model
 {
     use HasValueAttributes;
 
-    protected $fillable = [ 'user_id', 'key', 'value' ];
+    protected $fillable = ['user_id', 'key', 'value'];
 
     protected $guard = null;
 
     protected $setGuard = false;
 
     /**
-     * Get the related column name
+     * Get the related column name.
      *
      * @return string
      */
@@ -27,7 +26,7 @@ class UserSetting extends Model
     }
 
     /**
-     * Check if a user is logged in
+     * Check if a user is logged in.
      *
      * @return bool
      */
@@ -37,7 +36,7 @@ class UserSetting extends Model
     }
 
     /**
-     * Get current user
+     * Get current user.
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable
      */
@@ -47,7 +46,7 @@ class UserSetting extends Model
     }
 
     /**
-     * Belongs to a user
+     * Belongs to a user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -57,24 +56,23 @@ class UserSetting extends Model
     }
 
     /**
-     * Search for a user's setting
+     * Search for a user's setting.
      *
      * @param string $key
+     *
      * @return mixed
      */
     protected function search($key)
     {
-        if(!$this->isGuest())
-        {
+        if (!$this->isGuest()) {
             return self::where($this->getRelatedColumn(), $this->getCurrentUser()->getAuthIdentifier())
                         ->where('key', $key)->first();
         }
-        return null;
     }
 
     protected function getGuard()
     {
-        if(!$this->setGuard) {
+        if (!$this->setGuard) {
             $this->guard = config('setting.auth_guard', null);
         }
 
@@ -85,7 +83,8 @@ class UserSetting extends Model
      * Get a key of a user, or return default.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function get($key, $default = null)
@@ -94,43 +93,46 @@ class UserSetting extends Model
     }
 
     /**
-     * Set the auth guard
-     * 
+     * Set the auth guard.
+     *
      * @param mixed $guard
+     *
      * @return $this
      */
     public function guard($guard)
     {
         $this->guard = $guard;
         $this->setGuard = true;
+
         return $this;
     }
 
     /**
-     * Set a setting
+     * Set a setting.
      *
      * @param string $key
      * @param string $value
+     *
      * @return mixed
      */
     public function set($key, $value)
     {
-        if(!$this->isGuest())
-        {
+        if (!$this->isGuest()) {
             $setting = $this->search($key);
 
-            if($setting)
-            {
-                $setting->update([ 'value' => $value ]);
+            if ($setting) {
+                $setting->update(['value' => $value]);
+
                 return $setting;
             }
 
             return self::create([
                 $this->getRelatedColumn() => $this->getCurrentUser()->getAuthIdentifier(),
-                'key' => $key,
-                'value' => $value
+                'key'                     => $key,
+                'value'                   => $value,
             ]);
         }
+
         return false;
     }
 }

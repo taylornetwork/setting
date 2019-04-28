@@ -5,11 +5,11 @@ namespace TaylorNetwork\Tests;
 $loader = require __DIR__.'/../vendor/autoload.php';
 $loader->addPsr4('TaylorNetwork\\Tests\\', __DIR__.'/');
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Orchestra\Testbench\TestCase;
 use TaylorNetwork\Setting\Facades\UserSetting;
 use TaylorNetwork\Setting\SettingServiceProvider;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserSettingTest extends TestCase
 {
@@ -23,7 +23,7 @@ class UserSettingTest extends TestCase
     protected function getPackageAliases($app)
     {
         return [
-            'UserSetting' => UserSetting::class
+            'UserSetting' => UserSetting::class,
         ];
     }
 
@@ -38,45 +38,45 @@ class UserSettingTest extends TestCase
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         $user = TestUser::create([
-            'id' => 1,
-            'name' => 'Test User 1',
+            'id'    => 1,
+            'name'  => 'Test User 1',
             'email' => 'testuser1@example.com',
         ]);
 
         $user->settings()->create([
-            'key' => 'someKey',
+            'key'   => 'someKey',
             'value' => 'found',
         ]);
 
         $user->settings()->create([
-            'key' => 'boolTestTrue',
+            'key'   => 'boolTestTrue',
             'value' => true,
         ]);
 
         $user->settings()->create([
-            'key' => 'boolTestFalse',
+            'key'   => 'boolTestFalse',
             'value' => false,
         ]);
 
         $user->settings()->create([
-            'key' => 'isInt',
+            'key'   => 'isInt',
             'value' => 55,
         ]);
 
         $user->settings()->create([
-            'key' => 'isString',
+            'key'   => 'isString',
             'value' => 'this is a string',
         ]);
 
         TestUser::create([
-            'id' => 2,
-            'name' => 'Test User 2',
+            'id'    => 2,
+            'name'  => 'Test User 2',
             'email' => 'testuser2@example.com',
         ])->settings()->create([
-            'key' => 'aKey',
+            'key'   => 'aKey',
             'value' => 'newValue',
         ]);
 

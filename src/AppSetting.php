@@ -14,9 +14,10 @@ class AppSetting extends Model
     protected $primaryKey = 'key';
 
     /**
-     * Search for an app setting
+     * Search for an app setting.
      *
      * @param string $key
+     *
      * @return mixed
      */
     protected function search($key)
@@ -28,7 +29,8 @@ class AppSetting extends Model
      * Get a setting, or return default.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function get($key, $default = null)
@@ -37,25 +39,26 @@ class AppSetting extends Model
     }
 
     /**
-     * Set a setting
+     * Set a setting.
      *
      * @param string $key
      * @param string $value
+     *
      * @return mixed
      */
     public function set($key, $value)
     {
         $setting = $this->search($key);
 
-        if($setting)
-        {
-            $setting->update([ 'value' => $value ]);
+        if ($setting) {
+            $setting->update(['value' => $value]);
+
             return $setting;
         }
 
         return self::create([
-            'key' => $key,
-            'value' => $value
+            'key'   => $key,
+            'value' => $value,
         ]);
     }
 }

@@ -5,10 +5,10 @@ namespace TaylorNetwork\Tests;
 $loader = require __DIR__.'/../vendor/autoload.php';
 $loader->addPsr4('TaylorNetwork\\Tests\\', __DIR__.'/');
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase;
 use TaylorNetwork\Setting\Facades\AppSetting;
 use TaylorNetwork\Setting\SettingServiceProvider;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AppSettingTest extends TestCase
 {
@@ -22,47 +22,46 @@ class AppSettingTest extends TestCase
     protected function getPackageAliases($app)
     {
         return [
-            'AppSetting' => AppSetting::class
+            'AppSetting' => AppSetting::class,
         ];
     }
 
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite.database', __DIR__ . '/database/database.sqlite');
+        $app['config']->set('database.connections.sqlite.database', __DIR__.'/database/database.sqlite');
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         AppSetting::create([
-            'key' => 'someKey',
+            'key'   => 'someKey',
             'value' => 'found',
         ]);
 
         AppSetting::create([
-            'key' => 'boolTestTrue',
+            'key'   => 'boolTestTrue',
             'value' => true,
         ]);
 
         AppSetting::create([
-            'key' => 'boolTestFalse',
+            'key'   => 'boolTestFalse',
             'value' => false,
         ]);
 
         AppSetting::create([
-            'key' => 'isInt',
+            'key'   => 'isInt',
             'value' => 55,
         ]);
 
         AppSetting::create([
-            'key' => 'isString',
+            'key'   => 'isString',
             'value' => 'this is a string',
         ]);
-
     }
 
     public function testFacadeDefault()

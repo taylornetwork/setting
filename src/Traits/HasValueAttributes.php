@@ -1,8 +1,6 @@
 <?php
 
-
 namespace TaylorNetwork\Setting\Traits;
-
 
 trait HasValueAttributes
 {
@@ -10,11 +8,11 @@ trait HasValueAttributes
     {
         $value = $this->attributes['value'];
 
-        if(strtolower($value) === 'true' || strtolower($value) === 'false') {
+        if (strtolower($value) === 'true' || strtolower($value) === 'false') {
             return filter_var($value, FILTER_VALIDATE_BOOLEAN);
         }
 
-        if(ctype_digit($value)) {
+        if (ctype_digit($value)) {
             return (int) $value;
         }
 
@@ -23,7 +21,7 @@ trait HasValueAttributes
 
     public function setValueAttribute($value)
     {
-        if(gettype($value) === 'boolean') {
+        if (gettype($value) === 'boolean') {
             $this->attributes['value'] = $value ? 'true' : 'false';
         } else {
             $this->attributes['value'] = (string) $value;
