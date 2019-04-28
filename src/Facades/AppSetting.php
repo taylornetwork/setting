@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Facade;
 class AppSetting extends Facade
 {
     /**
-     * Get the facade accessor
+     * Get the facade accessor.
      *
      * @return string
      */
     protected static function getFacadeAccessor()
     {
-        return "AppSetting";
+        return 'AppSetting';
     }
 }
