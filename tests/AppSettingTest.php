@@ -64,7 +64,7 @@ class AppSettingTest extends TestCase
         ]);
 
         AppSetting::create([
-            'key' => 'isFloat',
+            'key'   => 'isFloat',
             'value' => 2.2,
         ]);
     }
