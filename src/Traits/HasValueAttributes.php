@@ -16,6 +16,10 @@ trait HasValueAttributes
             return (int) $value;
         }
 
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
         return $value;
     }
 

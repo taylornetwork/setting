@@ -2,7 +2,7 @@
 
 use TaylorNetwork\Setting\Facades\UserSetting;
 
-if (!function_exists('user_setting')) {
+if (!function_exists('user_setting') && in_array('user_setting', config('setting.register_helpers', ['user_setting']))) {
 
     /**
      * Get a user setting.

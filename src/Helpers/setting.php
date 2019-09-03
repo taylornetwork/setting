@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('setting')) {
+if (!function_exists('setting') && in_array('setting', config('setting.register_helpers', ['setting']))) {
 
     /**
      * Get a user setting.
