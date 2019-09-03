@@ -20,6 +20,13 @@ This package provides an easy way to access settings for the current logged in u
 
 ## Changes
 
+**v2.1**
+
+- Added support for float type values.
+
+
+**v2.0**
+
 Support for app specific AND user specific settings has been added. 
 
 - Added `AppSetting` model and facade
