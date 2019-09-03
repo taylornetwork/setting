@@ -28,4 +28,10 @@ return [
      */
     'app_setting_model' => \TaylorNetwork\Setting\AppSetting::class,
 
+    'register_helpers' => [
+        'user_setting',
+        'app_setting',
+        'setting', // Only to allow backwards compatibility, this is deprecated
+    ],
+
 ];

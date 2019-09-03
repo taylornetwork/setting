@@ -62,6 +62,11 @@ class AppSettingTest extends TestCase
             'key'   => 'isString',
             'value' => 'this is a string',
         ]);
+
+        AppSetting::create([
+            'key'   => 'isFloat',
+            'value' => 2.2,
+        ]);
     }
 
     public function testFacadeDefault()
@@ -98,5 +103,11 @@ class AppSettingTest extends TestCase
     public function testNull()
     {
         $this->assertEmpty(app_setting('unsetKey'));
+    }
+
+    public function testFloat()
+    {
+        $this->assertIsFloat(AppSetting::get('isFloat'));
+        $this->assertIsNotFloat(AppSetting::get('isInt'));
     }
 }
